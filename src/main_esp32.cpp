@@ -7,7 +7,6 @@
 #include <buzzer.h>
 #include <html.h>
 
-
 Clamps clamps = Clamps();
 PyroChannel igniter = PyroChannel();
 
@@ -24,14 +23,6 @@ void launch() {
 void abortLaunch() {
     clamps.closeClamps();
     igniter.stop();
-}
-
-void openClamps() {
-    clamps.openClamps();
-}
-
-void closeClamps() {
-    clamps.closeClamps();
 }
 
 void setup() {
@@ -66,13 +57,13 @@ void setup() {
 
     server.on("/clamps/open", HTTP_GET, []() {
         Serial.println("Clamps OPEN");
-        openClamps(); // Your function
+        clamps.openClamps(); // Your function
         server.send(200, "text/plain", "Clamps opened");
         });
 
     server.on("/clamps/close", HTTP_GET, []() {
         Serial.println("Clamps CLOSED");
-        closeClamps(); // Your function
+        clamps.closeClamps(); // Your function
         server.send(200, "text/plain", "Clamps closed");
         });
 

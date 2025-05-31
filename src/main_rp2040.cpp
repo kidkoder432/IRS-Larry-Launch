@@ -7,7 +7,7 @@
 #include "leds.h"
 #include "pyro.h"
 #include "html.h"       // Assumes index_html is defined here in PROGMEM
-#include "webserver.h"  // Our C-string based web server
+#include "rp2040webserver.h"  // Our C-string based web server
 
 // --- Global Objects ---
 Clamps clamps = Clamps();
