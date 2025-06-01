@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <Wifi.h>
+#include <WiFi.h>
 #include <WebServer.h>
 #include <clamps.h>
 #include <pyro.h>
@@ -8,7 +8,7 @@
 #include <html.h>
 
 Clamps clamps = Clamps();
-PyroChannel igniter = PyroChannel();
+PyroChannel igniter = PyroChannel(13, 2000);
 
 const char* ssid = "LaunchPad";       // or whatever WiFi you want to create
 const char* password = "12345678";    // min 8 characters for softAP
@@ -27,15 +27,15 @@ void abortLaunch() {
 
 void setup() {
     Serial.begin(115200);
+    digitalWrite(13, HIGH);
     Serial.println("Hello World!");
+    digitalWrite(13, LOW);
 
-    // Connect to WiFi
-    WiFi.begin(ssid, password);
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(1000);
-        Serial.println("Connecting to WiFi...");
-    }
-    Serial.println("Connected to WiFi");
+    // Create Access Point
+    WiFi.softAP(ssid, password);
+    IPAddress myIP = WiFi.softAPIP();
+    Serial.print("AP IP address: ");
+    Serial.println(myIP);
 
     // Serve the HTML UI
     server.on("/", HTTP_GET, []() {
@@ -83,4 +83,11 @@ void setup() {
 
 void loop() {
     server.handleClient();
+
+    // You can add other non-blocking tasks here if needed.
+    // Avoid using long delays in the loop() as it will make the web server unresponsive.
+    delay(1); // A very small delay can sometimes be helpful for stability on some platforms
+    flash(COLOR_BLUE, 500);
+
+    igniter.update();
 }
