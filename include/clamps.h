@@ -42,20 +42,20 @@ public:
     }
 
     void openClamps() {
-        this->clamp1Servo.write(this->clamp1Open);
-        this->clamp2Servo.write(this->clamp2Open);
+        write(clamp1Open, clamp2Open);
         clamp1Pos = clamp1Open;
         clamp2Pos = clamp2Open;
     }
 
     void closeClamps() {
-        this->clamp1Servo.write(this->clamp1Close);
-        this->clamp2Servo.write(this->clamp2Close);
+        write(clamp1Close, clamp2Close);
         clamp1Pos = clamp1Close;
         clamp2Pos = clamp2Close;
     }
 
     void write(int clamp1, int clamp2) {
+        clamp1 = constrain(clamp1, 0, 180);
+        clamp2 = constrain(clamp2, 0, 180);
         this->clamp1Servo.write(clamp1);
         this->clamp2Servo.write(clamp2);
         clamp1Pos = clamp1;
@@ -69,10 +69,10 @@ public:
     void nudge(int clamp1, int clamp2) {
         clamp1 = constrain(clamp1, -1, 1);
         clamp2 = constrain(clamp2, -1, 1);
-        this->clamp1Servo.write(clamp1Pos + clamp1);
-        this->clamp2Servo.write(clamp2Pos + clamp2);
         clamp1Pos += clamp1;
         clamp2Pos += clamp2;
+        write(clamp1Pos, clamp2Pos);
+        
     }
 
 
@@ -83,9 +83,9 @@ private:
     int clamp1Pos = 0;
     int clamp2Pos = 0;
 
-    int clamp1Open = 0;
-    int clamp2Open = 0;
+    int clamp1Open = 90;
+    int clamp2Open = 90;
 
-    int clamp1Close = 180;
-    int clamp2Close = 180;
+    int clamp1Close = 0;
+    int clamp2Close = 0;
 };
