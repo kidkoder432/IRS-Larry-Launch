@@ -67,6 +67,7 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
+            align-items: center;
             gap: 15px;
             width: 100%;
         }
@@ -151,7 +152,7 @@
         <div class="controls-grid">
             <div class="control-group">
                 <div class="button-row">
-                    <button class="button launch" onclick="triggerLaunch()">Launch</button>
+                    <button class="button launch" onclick="confirmLaunch()">Launch</button>
                     <button class="button abort" onclick="triggerAbort()">Abort</button>
                 </div>
                 <div id="launch-status" class="status-display">Ready to launch</div>
@@ -163,12 +164,12 @@
                     <button class="button clamp" onclick="triggerCloseClamps()">Close Clamps</button>
                 </div>
                 <div class="button-row">
-                    <label>Clamp 1:</label>
+                    <div>Clamp 1:</div>
                     <button class="button clamp nudge" onclick="triggerNudge(1, 1)">+</button>
                     <button class="button clamp nudge" onclick="triggerNudge(1, -1)">-</button>
                 </div>
                 <div class="button-row">
-                    <label>Clamp 2:</label>
+                    <div>Clamp 2:</div>
                     <button class="button clamp nudge" onclick="triggerNudge(2, 1)">+</button>
                     <button class="button clamp nudge" onclick="triggerNudge(2, -1)">-</button>
                 </div>
@@ -205,29 +206,28 @@
                     }
                 })
                 .catch(error => {
+                    statusEl.style.color = "red";
                     if (statusEl) statusEl.innerText = "Error: " + error.message;
                     if (specificStatusEl) {
+                        specificStatusEl.style.color = "red";
                         specificStatusEl.innerText = "Action failed";
                     }
+                    setTimeout(() => {
+                        if (statusEl) statusEl.style.color = "var(--status-text-color)";
+                        if (specificStatusEl) specificStatusEl.style.color = "var(--text-color)";
+                    }, 1000);
                 });
         }
 
+        function confirmLaunch() {
+            const confirmLaunch = confirm("Are you sure you want to launch?");
+            if (confirmLaunch) {
+                triggerLaunch();
+            }
+        }
+
         function triggerLaunch() {
-            const elem = document.getElementById("launch-status");
-            if (!elem) return;
-            let countdown = 10;
-            elem.innerText = "🚀 Launching in " + countdown + "s";
-            clearInterval(countdownInterval);
-            countdownInterval = setInterval(() => {
-                countdown--;
-                if (countdown > 0) {
-                    elem.innerText = "🚀 Launching in " + countdown + "s";
-                } else {
-                    clearInterval(countdownInterval);
-                    elem.innerText = "🚀 IGNITION!";
-                    sendCommand("/launch", "launch-status", "Launched (Command Sent)");
-                }
-            }, 1000);
+            sendCommand("/launch", "launch-status", "Launch initiated", "Preparing for launch...");
         }
 
         function triggerAbort() {
